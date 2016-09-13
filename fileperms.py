@@ -3,8 +3,8 @@ This script processes a given directory and prints the
     percentage of world permissions found.
 Re-write of https://github.com/Atticuss/FilePerms
 """
-import sys
-import os
+from sys import argv
+from os import stat, walk
 from stat import ST_MODE
 
 
@@ -20,18 +20,18 @@ class Perms:
 
     def get_files(self):
         """Builds a list of files for a give directory"""
-        for (dirpath, _, filenames) in os.walk(self.indir):
+        for (dirpath, _, filenames) in walk(self.indir):
             self.flist.extend(['%s/%s' % (dirpath, filename)
                                for filename in filenames])
 
     def parse_perms(self):
         """Parses the files in flist for file perms"""
         for permf in self.flist:
-            if os.stat(permf)[ST_MODE] & 4 != 0:
+            if stat(permf)[ST_MODE] & 4 != 0:
                 self.rlist.append(permf)
-            if os.stat(permf)[ST_MODE] & 2 != 0:
+            if stat(permf)[ST_MODE] & 2 != 0:
                 self.wlist.append(permf)
-            if os.stat(permf)[ST_MODE] & 1 != 0:
+            if stat(permf)[ST_MODE] & 1 != 0:
                 self.elist.append(permf)
 
     @staticmethod
@@ -49,25 +49,29 @@ class Perms:
         """Print list based on ltype and pnum
             pnum is the number of items to print"""
         if ltype == "e":
-            if not pnum:
+            if not pnum or pnum > len(self.elist):
                 pnum = len(self.elist)
-            for i in xrange(0, pnum):
+            for i in range(0, pnum):
                 print(self.elist[i])
         elif ltype == 'w':
-            if not pnum:
+            if not pnum or pnum > len(self.wlist):
                 pnum = len(self.wlist)
-            for i in xrange(0, pnum):
+            for i in range(0, pnum):
                 print(self.wlist[i])
         elif ltype == 'r':
-            if not pnum:
+            if not pnum or pnum > len(self.rlist):
                 pnum = len(self.rlist)
-            for i in xrange(0, pnum):
+            for i in range(0, pnum):
                 print(self.rlist[i])
 
-if len(sys.argv) < 2:
-    indir = input("Enter the directory to parse: ")
+# if copying/pasting into the interpreter set this equal to something!
+indir = None
+
+if len(argv) < 2 and not indir:
+    print("Oi, you forgot a dir! Set indir or specify a cmd arg")
+    exit(-1)
 else:
-    indir = sys.argv[1]
+    indir = argv[1]
 
 p = Perms(indir)
 p.get_files()
