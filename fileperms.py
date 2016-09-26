@@ -27,13 +27,15 @@ class Perms:
     def parse_perms(self):
         """Parses the files in flist for file perms"""
         for permf in self.flist:
-            if stat(permf)[ST_MODE] & 4 != 0:
-                self.rlist.append(permf)
-            if stat(permf)[ST_MODE] & 2 != 0:
-                self.wlist.append(permf)
-            if stat(permf)[ST_MODE] & 1 != 0:
-                self.elist.append(permf)
-
+            try:
+                if stat(permf)[ST_MODE] & 4 != 0:
+                    self.rlist.append(permf)
+                if stat(permf)[ST_MODE] & 2 != 0:
+                    self.wlist.append(permf)
+                if stat(permf)[ST_MODE] & 1 != 0:
+                    self.elist.append(permf)
+            except:
+                pass
     @staticmethod
     def _freq(x, y):
         """Returns the frequency of occurence for 2 numbers"""
