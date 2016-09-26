@@ -37,7 +37,7 @@ class Perms:
     @staticmethod
     def _freq(x, y):
         """Returns the frequency of occurence for 2 numbers"""
-        return x / y * 100.0
+        return float(x) / float(y) * 100.0
 
     def stats(self):
         """return %readable, %writable, %executable"""
